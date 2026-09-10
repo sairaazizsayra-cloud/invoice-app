@@ -1,0 +1,42 @@
+rules_version = '2';
+
+// Owner-only files. Do not use `allow read, write: if true`.
+// Enforce App Check from the Firebase console after debug tokens are registered.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function ownsBusiness(businessId) {
+      return isSignedIn()
+        && firestore.get(/databases/(default)/documents/businesses/$(businessId)).data.ownerId == request.auth.uid;
+    }
+
+    match /businesses/{businessId}/logo.jpg {
+      allow read: if ownsBusiness(businessId);
+      allow write: if ownsBusiness(businessId)
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|jpg|png|webp)');
+    }
+
+    match /businesses/{businessId}/products/{productId}.jpg {
+      allow read: if ownsBusiness(businessId);
+      allow write: if ownsBusiness(businessId)
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|jpg|png|webp)');
+    }
+
+    match /businesses/{businessId}/invoices/{invoiceId}.pdf {
+      allow read: if ownsBusiness(businessId);
+      allow write: if ownsBusiness(businessId)
+        && request.resource.size < 8 * 1024 * 1024
+        && request.resource.contentType == 'application/pdf';
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

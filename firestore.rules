@@ -1,0 +1,260 @@
+rules_version = '2';
+
+// Owner-only access. Do not use `allow read, write: if true`.
+// Enable Firebase App Check in the console (Monitor, then Enforce) after
+// debug tokens are registered. Do not require App Check in these rules
+// until that console setup is done, or signed-in clients will be locked out.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function ownsBusiness(businessId) {
+      return isSignedIn()
+        && get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerId == request.auth.uid;
+    }
+
+    match /users/{uid} {
+      allow read: if isSelf(uid);
+
+      allow create: if isSelf(uid)
+        && request.resource.data.uid == uid
+        && request.resource.data.role == 'business_owner'
+        && request.resource.data.email is string
+        && request.resource.data.name is string
+        && request.resource.data.businessName is string
+        && request.resource.data.phone is string
+        && request.resource.data.businessId is string
+        && request.resource.data.isActive is bool
+        && request.resource.data.emailVerified is bool;
+
+      allow update: if isSelf(uid)
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.email == resource.data.email;
+
+      allow delete: if false;
+    }
+
+    match /businesses/{businessId} {
+      allow read: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      allow create: if isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.id == businessId;
+
+      allow update: if isSignedIn()
+        && resource.data.ownerId == request.auth.uid
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.id == resource.data.id;
+
+      allow delete: if false;
+
+      match /customers/{customerId} {
+        allow read: if ownsBusiness(businessId);
+
+        allow create: if ownsBusiness(businessId)
+          && request.resource.data.id == customerId
+          && request.resource.data.businessId == businessId
+          && request.resource.data.name is string
+          && request.resource.data.name.size() >= 2
+          && request.resource.data.keys().hasAll([
+            'id', 'businessId', 'name', 'nameLower', 'company', 'email',
+            'phone', 'address', 'city', 'notes', 'createdAt', 'updatedAt'
+          ]);
+
+        allow update: if ownsBusiness(businessId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.businessId == resource.data.businessId
+          && request.resource.data.name is string
+          && request.resource.data.name.size() >= 2;
+
+        allow delete: if ownsBusiness(businessId);
+      }
+
+      match /products/{productId} {
+        allow read: if ownsBusiness(businessId);
+
+        allow create: if ownsBusiness(businessId)
+          && request.resource.data.id == productId
+          && request.resource.data.businessId == businessId
+          && request.resource.data.name is string
+          && request.resource.data.name.size() >= 2
+          && request.resource.data.priceMinor is int
+          && request.resource.data.costMinor is int
+          && request.resource.data.stockQuantity is int
+          && request.resource.data.keys().hasAll([
+            'id', 'businessId', 'name', 'nameLower', 'sku', 'skuLower',
+            'description', 'kind', 'categoryId', 'categoryName',
+            'priceMinor', 'costMinor', 'taxPercentMinor', 'stockQuantity',
+            'reorderLevel', 'trackStock', 'unit', 'imageUrl',
+            'createdAt', 'updatedAt'
+          ]);
+
+        allow update: if ownsBusiness(businessId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.businessId == resource.data.businessId
+          && request.resource.data.name is string
+          && request.resource.data.name.size() >= 2
+          && request.resource.data.priceMinor is int
+          && request.resource.data.costMinor is int
+          && request.resource.data.stockQuantity is int;
+
+        allow delete: if ownsBusiness(businessId);
+      }
+
+      match /categories/{categoryId} {
+        allow read: if ownsBusiness(businessId);
+
+        allow create: if ownsBusiness(businessId)
+          && request.resource.data.id == categoryId
+          && request.resource.data.businessId == businessId
+          && request.resource.data.name is string
+          && request.resource.data.name.size() >= 2
+          && request.resource.data.keys().hasAll([
+            'id', 'businessId', 'name', 'nameLower', 'createdAt', 'updatedAt'
+          ]);
+
+        allow update: if ownsBusiness(businessId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.businessId == resource.data.businessId;
+
+        allow delete: if ownsBusiness(businessId);
+      }
+
+      match /invoices/{invoiceId} {
+        allow read: if ownsBusiness(businessId);
+
+        allow create: if ownsBusiness(businessId)
+          && request.resource.data.id == invoiceId
+          && request.resource.data.businessId == businessId
+          && request.resource.data.invoiceNumber is string
+          && request.resource.data.invoiceNumber.size() >= 3
+          && request.resource.data.customerId is string
+          && request.resource.data.customerName is string
+          && request.resource.data.customerName.size() >= 2
+          && request.resource.data.status is string
+          && request.resource.data.subtotalMinor is int
+          && request.resource.data.discountMinor is int
+          && request.resource.data.taxMinor is int
+          && request.resource.data.totalMinor is int
+          && request.resource.data.paidMinor is int
+          && request.resource.data.items is list
+          && request.resource.data.keys().hasAll([
+            'id', 'businessId', 'invoiceNumber', 'invoiceSequence',
+            'customerId', 'customerName', 'customerCompany', 'customerEmail',
+            'customerPhone', 'customerAddress', 'customerCity',
+            'businessName', 'businessAddress', 'businessCity', 'businessPhone',
+            'businessEmail', 'businessTaxNumber', 'businessLogoUrl',
+            'currencyCode', 'status', 'paymentTerms', 'issueDate', 'dueDate',
+            'notes', 'paymentInstructions', 'termsAndConditions',
+            'subtotalMinor', 'discountMinor', 'taxMinor', 'totalMinor', 'paidMinor',
+            'items', 'createdAt', 'updatedAt'
+          ]);
+
+        allow update: if ownsBusiness(businessId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.businessId == resource.data.businessId
+          && request.resource.data.invoiceNumber == resource.data.invoiceNumber
+          && request.resource.data.invoiceSequence == resource.data.invoiceSequence
+          && request.resource.data.paidMinor is int
+          && request.resource.data.paidMinor >= 0
+          && request.resource.data.totalMinor is int
+          && request.resource.data.items is list;
+
+        allow delete: if ownsBusiness(businessId);
+      }
+
+      match /payments/{paymentId} {
+        allow read: if ownsBusiness(businessId);
+
+        allow create: if ownsBusiness(businessId)
+          && request.resource.data.id == paymentId
+          && request.resource.data.businessId == businessId
+          && request.resource.data.invoiceId is string
+          && request.resource.data.invoiceId.size() > 0
+          && request.resource.data.amountMinor is int
+          && request.resource.data.amountMinor > 0
+          && request.resource.data.method is string
+          && request.resource.data.keys().hasAll([
+            'id', 'businessId', 'invoiceId', 'invoiceNumber',
+            'customerId', 'customerName', 'amountMinor', 'currencyCode',
+            'method', 'paidAt', 'notes', 'createdAt', 'updatedAt'
+          ]);
+
+        allow update: if false;
+
+        allow delete: if ownsBusiness(businessId);
+      }
+
+      match /expenses/{expenseId} {
+        allow read: if ownsBusiness(businessId);
+
+        allow create: if ownsBusiness(businessId)
+          && request.resource.data.id == expenseId
+          && request.resource.data.businessId == businessId
+          && request.resource.data.title is string
+          && request.resource.data.title.size() >= 2
+          && request.resource.data.amountMinor is int
+          && request.resource.data.amountMinor > 0
+          && request.resource.data.category is string
+          && request.resource.data.keys().hasAll([
+            'id', 'businessId', 'title', 'titleLower', 'category',
+            'amountMinor', 'currencyCode', 'date', 'description',
+            'createdAt', 'updatedAt'
+          ]);
+
+        allow update: if ownsBusiness(businessId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.businessId == resource.data.businessId
+          && request.resource.data.title is string
+          && request.resource.data.title.size() >= 2
+          && request.resource.data.amountMinor is int
+          && request.resource.data.amountMinor > 0;
+
+        allow delete: if ownsBusiness(businessId);
+      }
+
+      match /notifications/{notificationId} {
+        allow read: if ownsBusiness(businessId);
+
+        allow create: if ownsBusiness(businessId)
+          && request.resource.data.id == notificationId
+          && request.resource.data.businessId == businessId
+          && request.resource.data.type is string
+          && request.resource.data.title is string
+          && request.resource.data.body is string
+          && request.resource.data.keys().hasAll([
+            'id', 'businessId', 'type', 'title', 'body',
+            'invoiceId', 'invoiceNumber', 'paymentId', 'read',
+            'createdAt', 'updatedAt'
+          ]);
+
+        allow update: if ownsBusiness(businessId)
+          && request.resource.data.id == resource.data.id
+          && request.resource.data.businessId == resource.data.businessId
+          && request.resource.data.type == resource.data.type
+          && request.resource.data.title == resource.data.title
+          && request.resource.data.body == resource.data.body
+          && request.resource.data.read is bool;
+
+        allow delete: if ownsBusiness(businessId);
+      }
+
+      match /{subcollection}/{documentId} {
+        allow read: if ownsBusiness(businessId);
+        allow write: if false;
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
