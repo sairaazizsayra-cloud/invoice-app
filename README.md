@@ -232,7 +232,7 @@ lib/
 
 | Item | Value |
 | --- | --- |
-| Display name | InvoicePro (change `AppConstants.appName` and native labels) |
+| Display name | Invoice App (change `AppConstants.appName` and native labels) |
 | Android applicationId | `com.invoicepro.invoice_pro` |
 | iOS / macOS bundle id | `com.invoicepro.invoicePro` |
 | Version | `1.0.0+1` in `pubspec.yaml` |

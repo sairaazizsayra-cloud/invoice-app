@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.invoicepro" "\0"
-            VALUE "FileDescription", "InvoicePro – Billing Manager" "\0"
+            VALUE "FileDescription", "Invoice App – Billing Manager" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "invoice_pro" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.invoicepro. All rights reserved." "\0"
             VALUE "OriginalFilename", "invoice_pro.exe" "\0"
-            VALUE "ProductName", "InvoicePro" "\0"
+            VALUE "ProductName", "Invoice App" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

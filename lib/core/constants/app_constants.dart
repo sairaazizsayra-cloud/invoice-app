@@ -6,9 +6,10 @@
 class AppConstants {
   AppConstants._();
 
-  static const String appName = 'InvoicePro';
+  static const String appName = 'Invoice App';
   static const String appTagline = 'Billing Manager';
   static const String appFullName = '$appName – $appTagline';
+  static const String appIconAsset = 'assets/images/app_icon.png';
 
   static const String defaultCurrencyCode = 'PKR';
   static const String defaultCurrencySymbol = 'Rs ';

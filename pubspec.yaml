@@ -1,5 +1,5 @@
 name: invoice_pro
-description: "InvoicePro – Billing Manager. A production-ready invoice and billing management application."
+description: "Invoice App – Billing Manager. A production-ready invoice and billing management application."
 publish_to: "none"
 
 # Android versionName is the version before +, versionCode is the build number after +.
@@ -34,6 +34,30 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#0F6B73"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
+  adaptive_icon_foreground_inset: 16
+  remove_alpha_ios: true
+  background_color_ios: "#0F6B73"
+  web:
+    generate: true
+    image_path: "assets/images/app_icon.png"
+    background_color: "#0F6B73"
+    theme_color: "#0F6B73"
+  windows:
+    generate: true
+    image_path: "assets/images/app_icon.png"
+    icon_size: 256
+  macos:
+    generate: true
+    image_path: "assets/images/app_icon.png"
 
 # firebase_core 4.14.0 pulls firebase_core_web 3.11.0, which calls Object.isA()
 # and only compiles on Dart 3.12+. This project is on Flutter 3.41.9 / Dart 3.11.5.

@@ -33,7 +33,7 @@ void main() {
       expect(content.notes, 'Thank you for your business.');
       expect(content.paymentInstructions, 'JazzCash 0300-0000000');
       expect(content.termsAndConditions, 'Payment due within 7 days.');
-      expect(content.footer, 'InvoicePro - Billing Manager');
+      expect(content.footer, 'Invoice App - Billing Manager');
     });
 
     test('sanitizes the PDF file name from the invoice number', () {

@@ -1,11 +1,11 @@
 {
-    "name": "InvoicePro",
-    "short_name": "InvoicePro",
+    "name": "Invoice App",
+    "short_name": "Invoice App",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0F6B73",
     "theme_color": "#0F6B73",
-    "description": "InvoicePro – Billing Manager. Invoices, payments, and books in one place.",
+    "description": "Invoice App – Billing Manager. Invoices, payments, and books in one place.",
     "orientation": "any",
     "prefer_related_applications": false,
     "icons": [

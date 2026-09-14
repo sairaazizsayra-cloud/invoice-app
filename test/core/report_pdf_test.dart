@@ -48,7 +48,7 @@ void main() {
       expect(content.title, AppStrings.salesReportTitle);
       expect(content.businessName, 'Khan Traders');
       expect(content.fileName, 'sales_report_2026-09-01_2026-09-03.pdf');
-      expect(content.footer, 'InvoicePro - Billing Manager');
+      expect(content.footer, 'Invoice App - Billing Manager');
       expect(content.summary.first.$1, AppStrings.totalRevenue);
       expect(content.summary.first.$2, snapshot.revenue.formatted);
     });

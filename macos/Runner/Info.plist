@@ -29,6 +29,6 @@
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>InvoicePro uses your photo library to attach a business logo and product images.</string>
+	<string>Invoice App uses your photo library to attach a business logo and product images.</string>
 </dict>
 </plist>

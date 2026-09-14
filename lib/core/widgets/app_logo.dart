@@ -10,16 +10,12 @@ class AppLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final radius = BorderRadius.circular(size * 0.28);
     final logo = Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(size * 0.28),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [scheme.primary, scheme.primary.withValues(alpha: 0.75)],
-        ),
+        borderRadius: radius,
         boxShadow: showGlow
             ? [
                 BoxShadow(
@@ -30,10 +26,13 @@ class AppLogo extends StatelessWidget {
               ]
             : null,
       ),
-      child: Icon(
-        Icons.receipt_long_rounded,
-        color: scheme.onPrimary,
-        size: size * 0.5,
+      clipBehavior: Clip.antiAlias,
+      child: Image.asset(
+        AppConstants.appIconAsset,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
       ),
     );
     return Semantics(label: AppConstants.appName, image: true, child: logo);
